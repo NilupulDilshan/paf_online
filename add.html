@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client</title>
+    <link rel="stylesheet" href="style.css"/>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<script>
+
+    $(document).ready(function(){
+
+        $("#productForm").submit(function(e){
+
+            var jsonfile = JSON.stringify({
+                "name" : $('#name').val(),
+                "price" : $('#price').val(),
+                "category" : $('#category').val(),
+                "quantity" : $('#quantity').val()
+            });
+
+            var ans = $.ajax({
+                type : 'POST',
+                url : 'http://localhost:8080/Ebuy/rest/product/product',
+                dataType : 'json',
+                contentType : 'application/json',
+                data : jsonfile
+            });
+
+            ans.done(function(data){
+                if(data['success']=="1"){
+                    swal("Success!", "Product Added Successfull!", "success");
+                    $('#name').val("");
+                    $('#price').val("");
+                    $('#category').val("");
+                    $('#quantity').val("");
+                }else if(data['success']=="0"){
+                    swal({
+                        title: "Error",
+                        text: "This Product is Already Exists",
+                        icon: "warning",
+                        dangerMode: true,
+                    });
+                    $('#name').val("");
+                    $('#category').val("");
+                }
+            });
+            ans.fail(function(data){
+                swal({
+                    title: "Error",
+                    text: "Connection Error !",
+                    icon: "warning",
+                    dangerMode: true,
+                });
+            });
+
+            e.preventDefault();
+        });
+
+    });
+
+</script>
+    <div class="container-fluid">
+        <div class="registerBox">
+            <h2>Add Product</h2>
+            <form id="productForm" >
+                <p>Product Name</p>
+                <input class="textbox" type="text" id="name" placeholder="Enter Name" required>
+                <p>Product Price</p>
+                <input class="textbox" type="number" id="price" min="0" step="0.01" placeholder="Enter Price" required>
+                <p>Product Category</p>
+                <select class="select" id="category" required>
+                    <option value="" >Select Category</option>
+                    <option value="1" >Electronics</option>
+                    <option value="2" >Fashion</option>
+                    <option value="3" >Toys</option>
+                    <option value="4" >Music</option>
+                    <option value="5" >Accessories</option>
+                </select>
+                <p>Quantity</p>
+                <input class="textbox" type="number" id="quantity" min="0" step="1" placeholder="Enter Quantity" required>
+                <br><br>
+                <input class="btn" type="submit" value="Add Product">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
